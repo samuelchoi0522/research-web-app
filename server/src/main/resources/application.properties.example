@@ -1,0 +1,8 @@
+spring.application.name=research_web_app
+spring.datasource.url={postgres_db_connection_url}
+spring.datasource.username={postgres_db_username}
+spring.datasource.password={postgres_db_password}
+spring.datasource.driver-class-name=org.postgresql.Driver
+spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+PROJECTID={GCP_project_id}
+BUCKETNAME={GCP_project_bucket_name}
