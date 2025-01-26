@@ -1,0 +1,12 @@
+{"properties": [
+  {
+    "name": "PROJECTID",
+    "type": "java.lang.String",
+    "description": "A description for 'PROJECTID'"
+  },
+  {
+    "name": "BUCKETNAME",
+    "type": "java.lang.String",
+    "description": "A description for 'BUCKETNAME'"
+  }
+]}

@@ -1,0 +1,166 @@
+.audio-recorder-container {
+    font-family: "Arial", sans-serif;
+    text-align: center;
+    background-color: #1e1e1e;
+    color: #fff;
+    padding: 30px;
+    border-radius: 15px;
+    width: 600px;
+    margin: 50px auto;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.title {
+    font-size: 28px;
+    margin-bottom: 25px;
+    font-weight: bold;
+    color: #f8f9fa;
+}
+
+.recording-section {
+    margin-bottom: 30px;
+}
+
+.record-button {
+    padding: 12px 25px;
+    font-size: 18px;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.record-button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+.record-button.recording {
+    background-color: #dc3545;
+}
+
+.record-button.recording:hover {
+    background-color: #a71d2a;
+}
+
+.upload-section {
+    margin: 25px 0;
+}
+
+.upload-container {
+    margin-top: 15px;
+}
+
+.file-upload-label {
+    display: inline-block;
+    background-color: #007bff;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.file-upload-label:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+.file-upload-input {
+    display: none;
+}
+
+.drag-drop-section {
+    border: 2px dashed #6c757d;
+    border-radius: 15px;
+    padding: 25px;
+    margin: 25px 0;
+    background-color: #292b2c;
+    color: #adb5bd;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.drag-drop-section:hover {
+    border-color: #007bff;
+    background-color: #343a40;
+}
+
+.browse-button {
+    margin-top: 15px;
+    padding: 12px 25px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.browse-button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+.recorded-audio-section {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.upload-button {
+    margin-top: 15px;
+    padding: 12px 25px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #28a745;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.upload-button:hover {
+    background-color: #218838;
+    transform: scale(1.05);
+}
+
+.visualizer {
+    width: 100%;
+    height: 100px;
+    margin-top: 20px;
+    background-color: #292b2c;
+    border-radius: 10px;
+    border: 2px solid #007bff;
+}
+
+#waveform {
+    width: 100%;
+    height: 100%;
+    margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+    .audio-recorder-container {
+        width: 90%;
+        padding: 20px;
+    }
+
+    .title {
+        font-size: 24px;
+    }
+
+    .record-button,
+    .browse-button,
+    .upload-button {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+
+    .file-upload-label {
+        padding: 10px 15px;
+        font-size: 14px;
+    }
+}
