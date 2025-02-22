@@ -1,166 +1,220 @@
-.audio-recorder-container {
-    font-family: "Arial", sans-serif;
-    text-align: center;
+/* Global Styles */
+body {
     background-color: #1e1e1e;
+    font-family: "Inter", sans-serif;
     color: #fff;
-    padding: 30px;
-    border-radius: 15px;
-    width: 600px;
-    margin: 50px auto;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    margin: 0;
+    padding: 0;
 }
 
+/* Container */
+.audio-container {
+    text-align: center;
+    background-color: #1e1e1e;
+    padding: 30px;
+    border-radius: 12px;
+    width: 450px;
+    margin: 60px auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Title */
 .title {
-    font-size: 28px;
-    margin-bottom: 25px;
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+/* Microphone Selection */
+#mic-select {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    font-size: 16px;
+    border: 2px solid #4A90E2;
+    border-radius: 6px;
+    background-color: #292b2c;
+    color: #fff;
+    outline: none;
+    cursor: pointer;
+}
+
+#mic-select:hover {
+    border-color: #1E88E5;
+}
+
+/* Recording Section */
+.recording-section {
+    margin-bottom: 20px;
+}
+
+/* Record Button */
+.record-btn {
+    padding: 12px 20px;
+    font-size: 16px;
+    background-color: #4A90E2;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #fff;
+}
+
+.record-btn:hover {
+    background-color: #1E88E5;
+}
+
+.record-btn.recording {
+    background-color: #E24A4A;
+}
+
+.record-btn.recording:hover {
+    background-color: #D32F2F;
+}
+
+/* Progress Timer */
+#progress {
+    font-size: 18px;
     font-weight: bold;
+    margin-top: 10px;
     color: #f8f9fa;
 }
 
-.recording-section {
-    margin-bottom: 30px;
+/* Waveform */
+.waveform {
+    width: 100%;
+    height: 100px;
+    margin-top: 15px;
+    background: #292b2c;
+    border-radius: 8px;
+    border: 2px solid #4A90E2;
 }
 
-.record-button {
-    padding: 12px 25px;
-    font-size: 18px;
-    color: #fff;
-    background-color: #007bff;
+/* Playback Section */
+.playback-section {
+    margin-top: 20px;
+}
+
+/* Playback Controls */
+.playback-section-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.playback-section-buttons audio {
+    width: 100%;
+    margin: 10px 0;
+}
+
+/* Upload Button */
+.upload-btn {
+    margin-top: 10px;
+    padding: 10px 18px;
+    font-size: 16px;
+    background-color: #4A90E2;
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.record-button:hover {
-    background-color: #0056b3;
-    transform: scale(1.05);
-}
-
-.record-button.recording {
-    background-color: #dc3545;
-}
-
-.record-button.recording:hover {
-    background-color: #a71d2a;
-}
-
-.upload-section {
-    margin: 25px 0;
-}
-
-.upload-container {
-    margin-top: 15px;
-}
-
-.file-upload-label {
-    display: inline-block;
-    background-color: #007bff;
+    transition: all 0.3s ease;
     color: #fff;
-    padding: 12px 20px;
+}
+
+.upload-btn:hover {
+    background-color: #1E88E5;
+}
+
+/* Download Link */
+.download-link {
+    display: inline-block;
+    margin-top: 10px;
+    color: #4A90E2;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+.download-link:hover {
+    text-decoration: underline;
+}
+
+/* Upload Section */
+.upload-section {
+    margin-top: 25px;
+}
+
+/* File Upload Label */
+.file-label {
+    display: inline-block;
+    background-color: #4A90E2;
+    color: #fff;
+    padding: 10px 18px;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
 }
 
-.file-upload-label:hover {
-    background-color: #0056b3;
-    transform: scale(1.05);
+.file-label:hover {
+    background-color: #1E88E5;
 }
 
-.file-upload-input {
+/* Hidden File Input */
+.file-input {
     display: none;
 }
 
-.drag-drop-section {
-    border: 2px dashed #6c757d;
-    border-radius: 15px;
-    padding: 25px;
-    margin: 25px 0;
-    background-color: #292b2c;
-    color: #adb5bd;
-    transition: border-color 0.3s ease, background-color 0.3s ease;
+.playback-section-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
 }
 
-.drag-drop-section:hover {
-    border-color: #007bff;
-    background-color: #343a40;
+.playback-section-buttons button {
+    width: 100%;
+    margin: 10px 0;
 }
 
-.browse-button {
-    margin-top: 15px;
-    padding: 12px 25px;
+.play-btn {
+    padding: 10px 18px;
     font-size: 16px;
-    color: #fff;
-    background-color: #007bff;
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.browse-button:hover {
-    background-color: #0056b3;
-    transform: scale(1.05);
-}
-
-.recorded-audio-section {
-    margin-top: 30px;
-    text-align: center;
-}
-
-.upload-button {
-    margin-top: 15px;
-    padding: 12px 25px;
-    font-size: 16px;
+    transition: all 0.3s ease;
     color: #fff;
+}
+
+.play-btn.play {
     background-color: #28a745;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    /* Green when playing */
 }
 
-.upload-button:hover {
-    background-color: #218838;
-    transform: scale(1.05);
+.play-btn.pause {
+    background-color: #ffc107;
+    /* Yellow when paused */
 }
 
-.visualizer {
-    width: 100%;
-    height: 100px;
-    margin-top: 20px;
-    background-color: #292b2c;
-    border-radius: 10px;
-    border: 2px solid #007bff;
-}
-
-#waveform {
-    width: 100%;
-    height: 100%;
-    margin: 0 auto;
-}
-
+/* Responsive Design */
 @media (max-width: 768px) {
-    .audio-recorder-container {
+    .audio-container {
         width: 90%;
         padding: 20px;
     }
 
     .title {
-        font-size: 24px;
+        font-size: 22px;
     }
 
-    .record-button,
-    .browse-button,
-    .upload-button {
-        padding: 10px 20px;
+    .record-btn,
+    .upload-btn {
+        padding: 10px 16px;
         font-size: 14px;
     }
 
-    .file-upload-label {
-        padding: 10px 15px;
+    .file-label {
+        padding: 8px 14px;
         font-size: 14px;
     }
 }
