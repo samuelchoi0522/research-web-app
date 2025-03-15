@@ -125,6 +125,25 @@ body {
     background-color: #1E88E5;
 }
 
+.submit-btn {
+    margin-top: 10px;
+    padding: 10px 18px;
+    font-size: 16px;
+    background-color: #4A90E2;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #fff;
+}
+
+.submit-btn:disabled {
+    background-color: #B0BEC5;
+    color: #ECEFF1;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
 /* Download Link */
 .download-link {
     display: inline-block;
@@ -143,7 +162,99 @@ body {
     margin-top: 25px;
 }
 
-/* File Upload Label */
+.upload-container {
+    margin-top: 15px;
+}
+
+/* Drag and Drop Section */
+.drag-drop-section {
+    border: 2px dashed #6c757d;
+    border-radius: 15px;
+    padding: 25px;
+    margin: 25px 0;
+    background-color: #292b2c;
+    color: #adb5bd;
+    text-align: center;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+    cursor: pointer;
+}
+
+.drag-drop-section:hover {
+    border-color: #007bff;
+    background-color: #343a40;
+}
+
+.drag-drop-section.active {
+    border-color: #00b894;
+    background-color: #2d3436;
+}
+
+/* File Upload Styling */
+.file-upload-label {
+    display: inline-block;
+    background-color: #007bff;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.p-fileupload-buttonbar {
+    display: none !important;
+}
+
+.p-fileupload-choose,
+.p-fileupload-upload,
+.p-fileupload-cancel {
+    padding: 12px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #fff;
+    border: #0056b3 2px solid;
+}
+
+.p-fileupload-upload {
+    background-color: #28a745;
+}
+
+.p-fileupload-upload:hover {
+    background-color: #218838;
+    transform: scale(1.05);
+}
+
+.file-upload-label:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+.file-upload-input {
+    display: none;
+}
+
+/* Browse Button */
+.browse-button {
+    margin-top: 15px;
+    padding: 12px 25px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.browse-button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+/* File Label */
 .file-label {
     display: inline-block;
     background-color: #4A90E2;
@@ -164,6 +275,7 @@ body {
     display: none;
 }
 
+/* Playback Section */
 .playback-section-buttons {
     display: flex;
     flex-direction: column;
@@ -176,6 +288,7 @@ body {
     margin: 10px 0;
 }
 
+/* Play/Pause Button */
 .play-btn {
     padding: 10px 18px;
     font-size: 16px;
@@ -196,25 +309,114 @@ body {
     /* Yellow when paused */
 }
 
+/* File Upload Container */
+.file-upload-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #292b2c;
+    border-radius: 12px;
+    padding: 20px;
+    width: 90%;
+    max-width: 450px;
+    margin: 20px auto;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    border: 2px solid #4A90E2;
+}
+
+/* Heading */
+.file-upload-container h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 15px;
+}
+
+/* File Upload Section */
+.p-fileupload {
+    width: 100%;
+}
+
+/* Drag and Drop Area */
+.p-fileupload-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 2px dashed #4A90E2;
+    border-radius: 8px;
+    padding: 20px;
+    background: #1e1e1e;
+    color: #ffffff;
+    cursor: pointer;
+    transition: border 0.3s ease-in-out, background-color 0.3s ease;
+}
+
+.p-fileupload-content:hover {
+    border-color: #1E88E5;
+    background-color: #2d2d2d;
+}
+
+/* Drag and Drop Text */
+.p-fileupload-empty {
+    font-size: 1rem;
+    color: #adb5bd;
+    text-align: center;
+}
+
+/* Upload Button */
+.upload-btn {
+    margin-top: 10px;
+    padding: 12px 20px;
+    font-size: 16px;
+    background-color: #4A90E2;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #fff;
+}
+
+.upload-btn:hover {
+    background-color: #1E88E5;
+}
+
+/* File Upload Label */
+.file-upload-label {
+    display: inline-block;
+    background-color: #007bff;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.file-upload-label:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+/* Hidden File Input */
+.file-upload-input {
+    display: none;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
-    .audio-container {
-        width: 90%;
+    .file-upload-container {
+        max-width: 90%;
         padding: 20px;
     }
 
-    .title {
+    .file-upload-container h2 {
         font-size: 22px;
     }
 
-    .record-btn,
-    .upload-btn {
+    .upload-btn,
+    .file-upload-label {
         padding: 10px 16px;
-        font-size: 14px;
-    }
-
-    .file-label {
-        padding: 8px 14px;
         font-size: 14px;
     }
 }

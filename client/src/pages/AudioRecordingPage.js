@@ -3,6 +3,10 @@ import WaveSurfer from "wavesurfer.js";
 import RecordPlugin from "wavesurfer.js/dist/plugins/record.esm.js"; // Import the Record Plugin
 import "../styles/AudioRecordingPage.css";
 
+
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+
+
 const AudioRecordingPage = () => {
     const [isRecording, setIsRecording] = useState(false);
     const [audioURL, setAudioURL] = useState(null);
@@ -14,9 +18,59 @@ const AudioRecordingPage = () => {
     const [csvFile, setCsvFile] = useState(null);
     const wavesurferRef = useRef(null);
     const recordRef = useRef(null);
+    const fileInputRef = useRef(null);
+    const [systolicBP, setSystolicBP] = useState("");
+    const [diastolicBP, setDiastolicBP] = useState("");
+
+    const handleClick = () => {
+        if (fileInputRef.current) {
+            fileInputRef.current.click();
+        }
+    };
+
+    const isSubmitEnabled = audioBlob && csvFile && systolicBP && diastolicBP;
+
+    const handleSubmit = async () => {
+        if (!isSubmitEnabled) return;
+
+        const formDataAudio = new FormData();
+        formDataAudio.append("audio", audioBlob);
+        formDataAudio.append("systolicBP", systolicBP);
+        formDataAudio.append("diastolicBP", diastolicBP);
+
+        const formDataCSV = new FormData();
+        formDataCSV.append("file", csvFile);
+        formDataCSV.append("systolicBP", systolicBP);
+        formDataCSV.append("diastolicBP", diastolicBP);
+
+        try {
+            const audioResponse = await fetch(`${API_BASE_URL}/api/upload/audio`, {
+                method: "POST",
+                body: formDataAudio,
+            });
+
+            const csvResponse = await fetch(`${API_BASE_URL}/api/upload/csv`, {
+                method: "POST",
+                body: formDataCSV,
+            });
+
+            if (audioResponse.ok && csvResponse.ok) {
+                alert("Both audio and CSV uploaded successfully!");
+                setAudioBlob(null);
+                setAudioURL(null);
+                setCsvFile(null);
+                setSystolicBP("");
+                setDiastolicBP("");
+                if (fileInputRef.current) fileInputRef.current.value = "";
+            } else {
+                alert("Failed to upload files.");
+            }
+        } catch (err) {
+            console.error("Error uploading files:", err);
+        }
+    };
 
     useEffect(() => {
-        // Initialize WaveSurfer with Record Plugin
         wavesurferRef.current = WaveSurfer.create({
             container: "#waveform",
             waveColor: "#4A90E2",
@@ -36,7 +90,6 @@ const AudioRecordingPage = () => {
             ],
         });
 
-        // Register the Record Plugin
         recordRef.current = wavesurferRef.current.registerPlugin(
             RecordPlugin.create({
                 renderRecordedAudio: false,
@@ -58,11 +111,9 @@ const AudioRecordingPage = () => {
             setAudioBlob(blob);
             setAudioURL(recordedUrl);
 
-            // Load the recorded audio into WaveSurfer for playback visualization
             wavesurferRef.current.load(recordedUrl);
         });
 
-        // Fetch available microphones
         RecordPlugin.getAvailableAudioDevices().then((devices) => {
             setMicDevices(devices);
             if (devices.length > 0) {
@@ -110,7 +161,6 @@ const AudioRecordingPage = () => {
     useEffect(() => {
         if (!wavesurferRef.current) return;
 
-        // Track progress of the waveform as it plays
         wavesurferRef.current.on("audioprocess", () => {
             if (!wavesurferRef.current.isPlaying()) return;
             const time = wavesurferRef.current.getCurrentTime();
@@ -121,7 +171,6 @@ const AudioRecordingPage = () => {
             );
         });
 
-        // Reset playback button when audio finishes
         wavesurferRef.current.on("finish", () => setIsPlaying(false));
 
         return () => {
@@ -130,26 +179,9 @@ const AudioRecordingPage = () => {
         };
     }, []);
 
-    const uploadAudio = async () => {
-        if (!audioBlob) return;
-
-        const formData = new FormData();
-        formData.append("audio", audioBlob);
-
-        try {
-            const response = await fetch("http://localhost:8080/api/upload", {
-                method: "POST",
-                body: formData,
-            });
-
-            alert(response.ok ? "Audio uploaded successfully!" : "Failed to upload audio");
-        } catch (err) {
-            console.error("Error uploading audio:", err);
-        }
-    };
-
     const handleCSVUpload = (event) => {
-        const file = event.target.files[0];
+        const file = event.target.files?.[0];
+
         if (!file) return;
 
         if (file.type !== "text/csv") {
@@ -189,6 +221,7 @@ const AudioRecordingPage = () => {
         <div className="audio-container">
             <h1 className="title">Research Web App</h1>
 
+            {/* Audio Recording Section */}
             <label htmlFor="mic-select">Select Microphone:</label>
             <select
                 id="mic-select"
@@ -210,6 +243,8 @@ const AudioRecordingPage = () => {
                 >
                     {isRecording ? "Stop Recording" : "Start Recording"}
                 </button>
+
+
                 <p id="progress">{recordingTime}</p>
                 <div id="waveform" className="waveform"></div>
             </div>
@@ -221,27 +256,62 @@ const AudioRecordingPage = () => {
                         <button className={`play-btn ${isPlaying ? "pause" : "play"}`} onClick={togglePlayback}>
                             {isPlaying ? "Pause" : "Play"}
                         </button>
-
-                        <button className="upload-btn" onClick={uploadAudio}>
-                            Upload
-                        </button>
                     </div>
-                    <a href={audioURL} download="recording.mp3" className="download-link">
-                        Download
-                    </a>
                 </div>
             )}
 
             {/* Apple Watch CSV Upload Section */}
-            <div className="csv-upload-section">
+            <div className="file-upload-container">
                 <h2>Upload Apple Watch CSV File</h2>
+
                 <input
                     type="file"
+                    ref={fileInputRef}
                     accept=".csv"
-                    className="csv-input"
+                    style={{ display: "none" }}
                     onChange={handleCSVUpload}
                 />
+
+                <button className="upload-btn" onClick={handleClick}>
+                    Click to upload your CSV file
+                </button>
+
+                {csvFile && <p>Selected file: {csvFile.name}</p>}
             </div>
+
+            <div className="bp-input-container">
+                <h2>Type BP from BP Cuff</h2>
+
+                <div className="bp-input">
+                    <label>Systolic (mmHg):</label>
+                    <input
+                        type="number"
+                        value={systolicBP}
+                        onChange={(e) => setSystolicBP(e.target.value)}
+                        placeholder="Enter systolic value"
+                    />
+                </div>
+
+                <div className="bp-input">
+                    <label>Diastolic (mmHg):</label>
+                    <input
+                        type="number"
+                        value={diastolicBP}
+                        onChange={(e) => setDiastolicBP(e.target.value)}
+                        placeholder="Enter diastolic value"
+                    />
+                </div>
+            </div>
+            <div className="submit-section">
+                <button
+                    className="submit-btn"
+                    onClick={handleSubmit}
+                    disabled={!isSubmitEnabled}
+                >
+                    Submit
+                </button>
+            </div>
+
         </div>
     );
 };

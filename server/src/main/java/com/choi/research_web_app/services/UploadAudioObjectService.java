@@ -7,7 +7,7 @@ import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 
-public class UploadObjectService {
+public class UploadAudioObjectService {
     public static void uploadObjectService(
             String projectId, String bucketName, String objectName, byte[] fileBytes) throws IOException {
         // Initialize the Google Cloud Storage client
