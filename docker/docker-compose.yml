@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  client:
+    image: client
+    build:
+      context: ../client
+      dockerfile: ../docker/client.Dockerfile
+    restart: always
+    ports:
+      - "3000:3000"
+
+  server:
+    image: server
+    build:
+      context: ../server
+      dockerfile: ../docker/server.Dockerfile
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_APPLICATION_NAME=research_web_app
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/research_db
+      - SPRING_DATASOURCE_USERNAME=jschoi22
+      - SPRING_DATASOURCE_PASSWORD=j@3m1nWkd
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
+      - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
+      - PROJECTID=sharp-doodad-449020-j4
+      - BUCKETNAME_AUDIO=heartbeat_audio
+      - BUCKETNAME_CSV=applewatch_csv
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_DB: research_db
+      POSTGRES_USER: jschoi22
+      POSTGRES_PASSWORD: j@3m1nWkd
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
