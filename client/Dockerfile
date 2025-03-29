@@ -12,4 +12,4 @@ WORKDIR /app
 COPY --from=build /build .
 
 # Run the app
-ENTRYPOINT exec npm start
+ENTRYPOINT yarn start

@@ -8,8 +8,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.choi.research_web_app.services.ListFilesService;
-import com.choi.research_web_app.services.UploadCSVObjectService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,8 +15,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.choi.research_web_app.services.UploadAudioObjectService;
 import com.choi.research_web_app.components.FileNameCreatorComponent;
+import com.choi.research_web_app.services.ListFilesService;
+import com.choi.research_web_app.services.UploadAudioObjectService;
+import com.choi.research_web_app.services.UploadCSVObjectService;
 
 @RestController
 public class FileUploadController {
@@ -36,7 +36,6 @@ public class FileUploadController {
     public List<Map<String, String>> listAllFiles() {
         List<String> audioFiles = ListFilesService.listObjects(bucketName_audio);
         List<String> csvFiles = ListFilesService.listObjects(bucketName_csv);
-
         return groupFilesByTimestamp(audioFiles, csvFiles);
     }
 
@@ -78,15 +77,20 @@ public class FileUploadController {
         return "https://storage.googleapis.com/" + bucketName + "/" + fileName;
     }
 
-
     @PostMapping("/api/upload/audio")
-    public String upload(
+    public String uploadAudio(
             @RequestParam("audio") MultipartFile file,
             @RequestParam("systolicBP") int systolicBP,
-            @RequestParam("diastolicBP") int diastolicBP) {
-        try {
-            String objectName = FileNameCreatorComponent.createAudioFileNameWithTimestamp(systolicBP, diastolicBP);
+            @RequestParam("diastolicBP") int diastolicBP,
+            @RequestParam(value = "uuid", required = false) String uuid) {
 
+        try {
+            if (uuid == null || uuid.isEmpty()) {
+                uuid = FileNameCreatorComponent.generateUUID();
+            }
+
+            String objectName = FileNameCreatorComponent.createAudioFileNameWithTimestamp(systolicBP, diastolicBP,
+                    uuid);
             byte[] fileBytes = file.getBytes();
 
             UploadAudioObjectService.uploadObjectService(projectId, bucketName_audio, objectName, fileBytes);
@@ -97,21 +101,24 @@ public class FileUploadController {
     }
 
     @PostMapping("/api/upload/csv")
-    public String uploadCsvFile(
+    public String uploadCsv(
             @RequestParam("file") MultipartFile file,
             @RequestParam("systolicBP") int systolicBP,
-            @RequestParam("diastolicBP") int diastolicBP) {
-        try {
-            String objectName = FileNameCreatorComponent.createCsvFileNameWithTimestamp(systolicBP, diastolicBP);
+            @RequestParam("diastolicBP") int diastolicBP,
+            @RequestParam(value = "uuid", required = false) String uuid) {
 
+        try {
+            if (uuid == null || uuid.isEmpty()) {
+                uuid = FileNameCreatorComponent.generateUUID();
+            }
+
+            String objectName = FileNameCreatorComponent.createCsvFileNameWithTimestamp(systolicBP, diastolicBP, uuid);
             byte[] fileBytes = file.getBytes();
 
             UploadCSVObjectService.uploadObjectService(projectId, bucketName_csv, objectName, fileBytes);
-
             return "CSV file uploaded successfully: " + objectName;
         } catch (IOException e) {
             return "CSV file upload failed: " + e.getMessage();
         }
     }
-
 }

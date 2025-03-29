@@ -1,46 +1,36 @@
 version: '3.8'
-
 services:
-  client:
-    image: client
+  # mysql:
+  #   image: mysql:8
+  #   container_name: mysql
+  #   restart: always
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+  #     MYSQL_DATABASE: ${MYSQL_DATABASE}
+  #     MYSQL_USER: ${MYSQL_USER}
+  #     MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+  #   volumes:
+  #     - mysql_data:/var/lib/mysql
+  #   ports:
+  #     - "3306:3306"
+
+  backend:
+    build:
+      context: ../server
+      dockerfile: Dockerfile
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+    ports:
+      - "8080:8080"
+
+  frontend:
     build:
       context: ../client
-      dockerfile: ../docker/client.Dockerfile
-    restart: always
+      dockerfile: Dockerfile
+    depends_on:
+      - backend
     ports:
       - "3000:3000"
 
-  server:
-    image: server
-    build:
-      context: ../server
-      dockerfile: ../docker/server.Dockerfile
-    restart: always
-    ports:
-      - "8080:8080"
-    environment:
-      - SPRING_APPLICATION_NAME=research_web_app
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/research_db
-      - SPRING_DATASOURCE_USERNAME=jschoi22
-      - SPRING_DATASOURCE_PASSWORD=j@3m1nWkd
-      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
-      - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
-      - PROJECTID=sharp-doodad-449020-j4
-      - BUCKETNAME_AUDIO=heartbeat_audio
-      - BUCKETNAME_CSV=applewatch_csv
-
-  postgres:
-    image: postgres:latest
-    container_name: postgres_db
-    restart: always
-    environment:
-      POSTGRES_DB: research_db
-      POSTGRES_USER: jschoi22
-      POSTGRES_PASSWORD: j@3m1nWkd
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-
 volumes:
-  pgdata:
+  mysql_data:
