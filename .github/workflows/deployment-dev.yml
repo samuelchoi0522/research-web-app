@@ -1,4 +1,4 @@
-name: GCP Build & Deploy
+name: Sample Build & Deploy
 
 on:
   push:
@@ -7,37 +7,19 @@ on:
 
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-latest
-
+    runs-on: self-hosted
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      - name: Decode GCP Credentials
+      - name: Cleanup
         run: |
-          echo "${{ secrets.GCP_CREDENTIALS_BASE64 }}" | base64 --decode > gcp-key.json
+          docker system prune -a -f --filter "until=24h"
 
-      - name: Prepare SSH Key
+      - name: Build
         run: |
-          echo "${{ secrets.GCP_SSH_PRIVATE_KEY }}" > private_key.pem
-          chmod 600 private_key.pem
+          docker compose -f docker/production.docker-compose.yml build
 
-      - name: Copy files to GCP instance
+      - name: Deploy
         run: |
-          scp -i private_key.pem -o StrictHostKeyChecking=no gcp-key.json ${{ secrets.GCP_USER }}@${{ secrets.GCP_INSTANCE_IP }}:/home/${{ secrets.GCP_USER }}/app/gcp-key.json
-          scp -i private_key.pem -o StrictHostKeyChecking=no -r ./client ./server ./docker ${{ secrets.GCP_USER }}@${{ secrets.GCP_INSTANCE_IP }}:/home/${{ secrets.GCP_USER }}/app/
-
-      - name: Deploy on GCP
-        run: |
-          ssh -i private_key.pem -o StrictHostKeyChecking=no ${{ secrets.GCP_USER }}@${{ secrets.GCP_INSTANCE_IP }} << EOF
-          cd /home/${{ secrets.GCP_USER }}/app/docker
-
-          export GOOGLE_APPLICATION_CREDENTIALS=/home/${{ secrets.GCP_USER }}/app/gcp-key.json
-
-          docker compose down
-          docker compose up -d --build
-          EOF
-
-      - name: Cleanup Sensitive Files
-        run: |
-          rm -f private_key.pem gcp-key.json
+          docker compose -f docker/production.docker-compose.yml down
+          docker compose -f docker/production.docker-compose.yml up -d --build
