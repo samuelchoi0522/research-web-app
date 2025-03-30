@@ -6,10 +6,14 @@ import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
+import com.google.auth.oauth2.GoogleCredentials;
 
 public class UploadCSVObjectService {
     public static void uploadObjectService(
             String projectId, String bucketName, String objectName, byte[] fileBytes) throws IOException {
+        GoogleCredentials credentials = GoogleCredentials.getApplicationDefault();
+        System.out.println("🪪 Active identity: " + credentials);
+
         // Initialize the Google Cloud Storage client
         Storage storage = StorageOptions.newBuilder().setProjectId(projectId).build().getService();
 

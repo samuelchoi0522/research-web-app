@@ -2,6 +2,7 @@ package com.choi.research_web_app.services;
 
 import java.io.IOException;
 
+import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
@@ -10,6 +11,10 @@ import com.google.cloud.storage.StorageOptions;
 public class UploadAudioObjectService {
     public static void uploadObjectService(
             String projectId, String bucketName, String objectName, byte[] fileBytes) throws IOException {
+        GoogleCredentials credentials = GoogleCredentials.getApplicationDefault();
+        System.out.println("🪪 Active identity: " + credentials);
+
+
         // Initialize the Google Cloud Storage client
         Storage storage = StorageOptions.newBuilder().setProjectId(projectId).build().getService();
 
