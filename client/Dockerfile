@@ -3,6 +3,9 @@ FROM node:20 AS build
 WORKDIR /build
 COPY . .
 
+# Ensure production env for correct .env file usage
+ENV NODE_ENV=production
+
 RUN npm install
 RUN npm run build
 
