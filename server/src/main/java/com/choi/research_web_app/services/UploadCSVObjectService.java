@@ -1,29 +1,17 @@
 package com.choi.research_web_app.services;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
-import com.google.auth.oauth2.ServiceAccountCredentials;
-
 
 public class UploadCSVObjectService {
     public static void uploadObjectService(
             String projectId, String bucketName, String objectName, byte[] fileBytes) throws IOException {
         // Initialize the Google Cloud Storage client
-        Storage storage = StorageOptions.newBuilder()
-                .setCredentials(
-                        ServiceAccountCredentials.fromStream(
-                                new FileInputStream(System.getenv("GOOGLE_APPLICATION_CREDENTIALS"))
-                        )
-                )
-                .setProjectId(projectId)
-                .build()
-                .getService();
-
+        Storage storage = StorageOptions.newBuilder().setProjectId(projectId).build().getService();
 
         // Create a BlobId for the object to be uploaded
         BlobId blobId = BlobId.of(bucketName, objectName);
