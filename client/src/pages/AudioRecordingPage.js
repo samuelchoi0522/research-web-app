@@ -21,6 +21,8 @@ const AudioRecordingPage = () => {
     const fileInputRef = useRef(null);
     const [systolicBP, setSystolicBP] = useState("");
     const [diastolicBP, setDiastolicBP] = useState("");
+    const [mp3File, setMp3File] = useState(null);
+
 
     const handleClick = () => {
         if (fileInputRef.current) {
@@ -28,7 +30,7 @@ const AudioRecordingPage = () => {
         }
     };
 
-    const isSubmitEnabled = audioBlob && csvFile && systolicBP && diastolicBP;
+    const isSubmitEnabled = (audioBlob || mp3File) && csvFile && systolicBP && diastolicBP;
 
     const handleSubmit = async () => {
         if (!isSubmitEnabled) return;
@@ -259,6 +261,27 @@ const AudioRecordingPage = () => {
                     </div>
                 </div>
             )}
+
+            <div className="mp3-upload-section">
+                <h2>Or Upload MP3 Instead</h2>
+                <input
+                    type="file"
+                    accept="audio/mp3"
+                    onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file && file.type === "audio/mpeg") {
+                            setMp3File(file);
+                            const url = URL.createObjectURL(file);
+                            setAudioURL(url);
+                            setAudioBlob(file); // sets this for submit
+                        } else {
+                            alert("Please upload a valid MP3 file.");
+                        }
+                    }}
+                />
+                {mp3File && <p>Selected MP3: {mp3File.name}</p>}
+            </div>
+
 
             {/* Apple Watch CSV Upload Section */}
             <div className="file-upload-container">

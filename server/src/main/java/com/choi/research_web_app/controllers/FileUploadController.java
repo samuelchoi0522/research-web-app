@@ -9,10 +9,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.*;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.choi.research_web_app.components.FileNameCreatorComponent;
@@ -89,13 +94,19 @@ public class FileUploadController {
                 uuid = FileNameCreatorComponent.generateUUID();
             }
 
-            String objectName = FileNameCreatorComponent.createAudioFileNameWithTimestamp(systolicBP, diastolicBP,
-                    uuid);
+            int bpm = estimateBpmFromAudio(file);
+            System.out.println("Estimated BPM: " + bpm);
+            System.out.println("Audio file name: " + file.getOriginalFilename());
+            System.out.println("Audio content type: " + file.getContentType());
+
+            String objectName = FileNameCreatorComponent.createAudioFileNameWithTimestamp(systolicBP, diastolicBP, bpm, uuid);
             byte[] fileBytes = file.getBytes();
 
             UploadAudioObjectService.uploadObjectService(projectId, bucketName_audio, objectName, fileBytes);
+            System.out.println("Audio file uploaded successfully: " + objectName);
             return "Audio file uploaded successfully: " + objectName;
         } catch (IOException e) {
+            System.err.println("Audio file upload failed: " + e.getMessage());
             return "Audio file upload failed: " + e.getMessage();
         }
     }
@@ -116,9 +127,64 @@ public class FileUploadController {
             byte[] fileBytes = file.getBytes();
 
             UploadCSVObjectService.uploadObjectService(projectId, bucketName_csv, objectName, fileBytes);
+            System.out.println("CSV file uploaded successfully: " + objectName);
             return "CSV file uploaded successfully: " + objectName;
         } catch (IOException e) {
+            System.err.println("CSV file upload failed: " + e.getMessage());
             return "CSV file upload failed: " + e.getMessage();
         }
     }
+
+    @PostMapping("/api/bpm/estimate")
+    public ResponseEntity<String> estimateBpm(@RequestParam("audio") MultipartFile file) {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+            body.add("file", new ByteArrayResource(file.getBytes()) {
+                @Override
+                public String getFilename() {
+                    return file.getOriginalFilename();
+                }
+            });
+
+            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+            String pythonUrl = "http://bpm-service:5000/estimate-bpm"; // DNS name in Docker
+
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<String> response = restTemplate.postForEntity(pythonUrl, requestEntity, String.class);
+
+            return ResponseEntity.ok(response.getBody());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+        }
+    }
+
+    private int estimateBpmFromAudio(MultipartFile file) throws IOException {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("file", new ByteArrayResource(file.getBytes()) {
+            @Override
+            public String getFilename() {
+                return file.getOriginalFilename();
+            }
+        });
+
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+        String pythonUrl = "http://bpm-service:5000/estimate-bpm";
+
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<Map> response = restTemplate.postForEntity(pythonUrl, requestEntity, Map.class);
+
+        if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null && response.getBody().containsKey("bpm")) {
+            return (int) Math.round(Double.parseDouble(response.getBody().get("bpm").toString()));
+        } else {
+            throw new IOException("Failed to estimate BPM");
+        }
+    }
+
+
 }

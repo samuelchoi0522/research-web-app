@@ -6,25 +6,19 @@ services:
       context: ../server
       dockerfile: Dockerfile
     environment:
-      SPRING_PROFILES_ACTIVE: prod
+      SPRING_PROFILES_ACTIVE: dev
+      GOOGLE_APPLICATION_CREDENTIALS: /app/gcp-key.json
+    volumes:
+      - ../researchapp-453819-f97cdc06708e.json:/app/gcp-key.json
     ports:
       - "8080:8080"
-
-  frontend:
-    build:
-      context: ../client
-      dockerfile: Dockerfile
-    depends_on:
-      - backend
-    ports:
-      - "3000:3000"
 
   bpm-service:
     build:
       context: ../python_microservice
       dockerfile: Dockerfile
     ports:
-    - "5001:5000"
+      - "5001:5000"
 
 volumes:
   mysql_data:

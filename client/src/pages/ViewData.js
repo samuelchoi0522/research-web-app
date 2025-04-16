@@ -34,6 +34,12 @@ const ViewData = () => {
         return match ? { systolic: match[1], diastolic: match[2] } : { systolic: "N/A", diastolic: "N/A" };
     };
 
+    const extractBPMValues = (filename) => {
+        const parts = filename.split("_");
+        return parts.length >= 3 ? { bpm: parts[4] } : { bpm: "N/A" };
+    };
+
+
     return (
         <div className="view-data-container">
             <h1>View Uploaded Data</h1>
@@ -43,11 +49,13 @@ const ViewData = () => {
                 <div className="data-grid">
                     {data.map(({ timestamp, audio, csv }) => {
                         const { systolic, diastolic } = csv !== "No CSV file" ? extractBPValues(csv) : { systolic: "N/A", diastolic: "N/A" };
+                        const { bpm } = audio !== "No audio file" ? extractBPMValues(audio) : { bpm: "N/A" };
 
                         return (
                             <div key={timestamp} className="data-card">
                                 <h3 className="timestamp">{timestamp}</h3>
                                 <p className="bp-info">BP: {systolic}/{diastolic} mmHg</p>
+                                <p className="bp-info">Estimated BPM: {bpm} BPM</p>
 
                                 <div className="audio-container">
                                     {audio !== "No audio file" ? (
