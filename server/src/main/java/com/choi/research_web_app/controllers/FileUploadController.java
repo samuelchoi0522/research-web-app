@@ -47,22 +47,31 @@ public class FileUploadController {
     private List<Map<String, String>> groupFilesByUUID(List<String> audioFiles, List<String> csvFiles) {
         Map<String, Map<String, String>> groupedFiles = new HashMap<>();
         Pattern uuidPattern = Pattern.compile("([a-fA-F0-9\\-]{36})");
+        Pattern timestampPattern = Pattern.compile("(\\d{8}_\\d{6})");
 
         for (String audio : audioFiles) {
             Matcher matcher = uuidPattern.matcher(audio);
+            Matcher timestampMatcher = timestampPattern.matcher(audio);
             if (matcher.find()) {
                 String uuid = matcher.group(1);
                 groupedFiles.putIfAbsent(uuid, new HashMap<>());
                 groupedFiles.get(uuid).put("audio", generatePublicURL(bucketName_audio, audio));
+                if (timestampMatcher.find()) {
+                    groupedFiles.get(uuid).put("timestamp", timestampMatcher.group(1));
+                }
             }
         }
 
         for (String csv : csvFiles) {
             Matcher matcher = uuidPattern.matcher(csv);
+            Matcher timestampMatcher = timestampPattern.matcher(csv);
             if (matcher.find()) {
                 String uuid = matcher.group(1);
                 groupedFiles.putIfAbsent(uuid, new HashMap<>());
                 groupedFiles.get(uuid).put("csv", generatePublicURL(bucketName_csv, csv));
+                if (timestampMatcher.find()) {
+                    groupedFiles.get(uuid).put("timestamp", timestampMatcher.group(1));
+                }
             }
         }
 
@@ -70,6 +79,7 @@ public class FileUploadController {
         for (Map.Entry<String, Map<String, String>> entry : groupedFiles.entrySet()) {
             Map<String, String> fileGroup = new HashMap<>();
             fileGroup.put("uuid", entry.getKey());
+            fileGroup.put("timestamp", entry.getValue().getOrDefault("timestamp", "No timestamp found"));
             fileGroup.put("audio", entry.getValue().getOrDefault("audio", "No audio file"));
             fileGroup.put("csv", entry.getValue().getOrDefault("csv", "No CSV file"));
             response.add(fileGroup);
@@ -88,6 +98,7 @@ public class FileUploadController {
             @RequestParam("audio") MultipartFile file,
             @RequestParam("systolicBP") int systolicBP,
             @RequestParam("diastolicBP") int diastolicBP,
+            @RequestParam("actualBPM") int actualBPM,
             @RequestParam(value = "uuid", required = false) String uuid) {
 
         try {
@@ -100,7 +111,7 @@ public class FileUploadController {
             System.out.println("Audio file name: " + file.getOriginalFilename());
             System.out.println("Audio content type: " + file.getContentType());
 
-            String objectName = FileNameCreatorComponent.createAudioFileNameWithTimestamp(systolicBP, diastolicBP, bpm, uuid);
+            String objectName = FileNameCreatorComponent.createAudioFileNameWithTimestamp(systolicBP, diastolicBP, bpm, actualBPM, uuid);
             byte[] fileBytes = file.getBytes();
 
             UploadAudioObjectService.uploadObjectService(projectId, bucketName_audio, objectName, fileBytes);
@@ -117,6 +128,7 @@ public class FileUploadController {
             @RequestParam("file") MultipartFile file,
             @RequestParam("systolicBP") int systolicBP,
             @RequestParam("diastolicBP") int diastolicBP,
+            @RequestParam("actualBPM") int actualBPM,
             @RequestParam(value = "uuid", required = false) String uuid) {
 
         try {
@@ -124,7 +136,7 @@ public class FileUploadController {
                 uuid = FileNameCreatorComponent.generateUUID();
             }
 
-            String objectName = FileNameCreatorComponent.createCsvFileNameWithTimestamp(systolicBP, diastolicBP, uuid);
+            String objectName = FileNameCreatorComponent.createCsvFileNameWithTimestamp(systolicBP, diastolicBP, actualBPM, uuid);
             byte[] fileBytes = file.getBytes();
 
             UploadCSVObjectService.uploadObjectService(projectId, bucketName_csv, objectName, fileBytes);

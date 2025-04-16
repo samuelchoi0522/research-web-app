@@ -19,15 +19,20 @@ def convert_to_wav(input_path):
 def estimate_bpm(audio_path):
     y, sr = librosa.load(audio_path)
     print(f"Sample rate: {sr}, Duration: {len(y)/sr:.2f} seconds")
-    
-    y = y * 1000
 
-    # No filtering here — just using raw signal
-    peaks, _ = find_peaks(y, distance=sr*0.4, prominence=0.05)
+    # Bandpass filter between 20–150Hz
+    def bandpass_filter(signal, lowcut, highcut, fs, order=4):
+        nyq = 0.5 * fs
+        low = lowcut / nyq
+        high = highcut / nyq
+        b, a = butter(order, [low, high], btype='band')
+        return filtfilt(b, a, signal)
 
-    print("Raw peak indices:", peaks)
-    print("Peak times (s):", [round(p / sr, 2) for p in peaks])
+    filtered = bandpass_filter(y, 20, 150, sr)
+    peaks, _ = find_peaks(filtered, distance=sr * 0.6, prominence=0.1)
+
     print("Number of peaks detected:", len(peaks))
+    print("Peak times (s):", [round(p / sr, 2) for p in peaks])
 
     intervals = np.diff(peaks) / sr
     if len(intervals) == 0:
@@ -37,6 +42,7 @@ def estimate_bpm(audio_path):
     bpm = 60 / np.mean(intervals)
     print(f"Estimated BPM: {bpm}")
     return round(bpm, 2)
+
 
 
 @app.post("/estimate-bpm")

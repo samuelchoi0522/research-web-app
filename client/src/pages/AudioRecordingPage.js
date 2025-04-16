@@ -24,6 +24,7 @@ const AudioRecordingPage = () => {
     const [systolicBP, setSystolicBP] = useState("");
     const [diastolicBP, setDiastolicBP] = useState("");
     const [mp3File, setMp3File] = useState(null);
+    const [actualBPM, setActualBPM] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
 
@@ -33,7 +34,7 @@ const AudioRecordingPage = () => {
         }
     };
 
-    const isSubmitEnabled = (audioBlob || mp3File) && csvFile && systolicBP && diastolicBP;
+    const isSubmitEnabled = (audioBlob || mp3File) && csvFile && systolicBP && diastolicBP && actualBPM;
 
     const handleSubmit = async () => {
         if (!isSubmitEnabled) return;
@@ -44,12 +45,14 @@ const AudioRecordingPage = () => {
         formDataAudio.append("audio", audioBlob);
         formDataAudio.append("systolicBP", systolicBP);
         formDataAudio.append("diastolicBP", diastolicBP);
+        formDataAudio.append("actualBPM", actualBPM);
         formDataAudio.append("uuid", generatedUUID);
 
         const formDataCSV = new FormData();
         formDataCSV.append("file", csvFile);
         formDataCSV.append("systolicBP", systolicBP);
         formDataCSV.append("diastolicBP", diastolicBP);
+        formDataCSV.append("actualBPM", actualBPM);
         formDataCSV.append("uuid", generatedUUID);
 
         try {
@@ -70,7 +73,9 @@ const AudioRecordingPage = () => {
                 setCsvFile(null);
                 setSystolicBP("");
                 setDiastolicBP("");
+                setActualBPM("");
                 setMp3File(null);
+
                 if (fileInputRef.current) fileInputRef.current.value = "";
             } else {
                 alert("Failed to upload files.");
@@ -334,7 +339,18 @@ const AudioRecordingPage = () => {
                         placeholder="Enter diastolic value"
                     />
                 </div>
+
+                <div className="bp-input">
+                    <label>BPM:</label>
+                    <input
+                        type="number"
+                        value={actualBPM}
+                        onChange={(e) => setActualBPM(e.target.value)}
+                        placeholder="Enter BPM value"
+                    />
+                </div>
             </div>
+
             <div className="submit-section">
                 <button
                     className="submit-btn"

@@ -39,6 +39,28 @@ const ViewData = () => {
         return parts.length >= 3 ? { bpm: parts[4] } : { bpm: "N/A" };
     };
 
+    const extractActualBPMValues = (filename) => {
+        const parts = filename.split("_");
+        return parts.length >= 3 ? { actualBPM: parts[5] } : { bpm: "N/A" };
+    };
+
+    const formatTimestamp = (timestampStr) => {
+        const match = timestampStr.match(/(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})/);
+        if (!match) return timestampStr;
+
+        const [, year, month, day, hour, minute, second] = match;
+        const date = new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}`);
+        return date.toLocaleString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+        });
+    };
+
+
 
     return (
         <div className="view-data-container">
@@ -47,15 +69,17 @@ const ViewData = () => {
                 <p>Loading data...</p>
             ) : (
                 <div className="data-grid">
-                    {data.map(({ uuid, audio, csv }) => {
+                    {data.map(({ timestamp, uuid, audio, csv }) => {
                         const { systolic, diastolic } = csv !== "No CSV file" ? extractBPValues(csv) : { systolic: "N/A", diastolic: "N/A" };
                         const { bpm } = audio !== "No audio file" ? extractBPMValues(audio) : { bpm: "N/A" };
+                        const { actualBPM } = audio !== "No audio file" ? extractActualBPMValues(audio) : { actualBPM: "N/A" };
 
                         return (
                             <div key={uuid} className="data-card">
-                                <h3 className="timestamp">{uuid}</h3>
+                                <h3 className="timestamp">{formatTimestamp(timestamp)} UTC</h3>
                                 <p className="bp-info">BP: {systolic}/{diastolic} mmHg</p>
                                 <p className="bp-info">Estimated BPM: {bpm} BPM</p>
+                                <p className="bp-info">Actual BPM: {actualBPM} BPM</p>
 
                                 <div className="audio-container">
                                     {audio !== "No audio file" ? (
