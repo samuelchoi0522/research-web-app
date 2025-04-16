@@ -41,35 +41,35 @@ public class FileUploadController {
     public List<Map<String, String>> listAllFiles() {
         List<String> audioFiles = ListFilesService.listObjects(bucketName_audio);
         List<String> csvFiles = ListFilesService.listObjects(bucketName_csv);
-        return groupFilesByTimestamp(audioFiles, csvFiles);
+        return groupFilesByUUID(audioFiles, csvFiles);
     }
 
-    private List<Map<String, String>> groupFilesByTimestamp(List<String> audioFiles, List<String> csvFiles) {
+    private List<Map<String, String>> groupFilesByUUID(List<String> audioFiles, List<String> csvFiles) {
         Map<String, Map<String, String>> groupedFiles = new HashMap<>();
-        Pattern pattern = Pattern.compile("(\\d{8}_\\d{6})");
+        Pattern uuidPattern = Pattern.compile("([a-fA-F0-9\\-]{36})");
 
         for (String audio : audioFiles) {
-            Matcher matcher = pattern.matcher(audio);
+            Matcher matcher = uuidPattern.matcher(audio);
             if (matcher.find()) {
-                String timestamp = matcher.group(1);
-                groupedFiles.putIfAbsent(timestamp, new HashMap<>());
-                groupedFiles.get(timestamp).put("audio", generatePublicURL(bucketName_audio, audio));
+                String uuid = matcher.group(1);
+                groupedFiles.putIfAbsent(uuid, new HashMap<>());
+                groupedFiles.get(uuid).put("audio", generatePublicURL(bucketName_audio, audio));
             }
         }
 
         for (String csv : csvFiles) {
-            Matcher matcher = pattern.matcher(csv);
+            Matcher matcher = uuidPattern.matcher(csv);
             if (matcher.find()) {
-                String timestamp = matcher.group(1);
-                groupedFiles.putIfAbsent(timestamp, new HashMap<>());
-                groupedFiles.get(timestamp).put("csv", generatePublicURL(bucketName_csv, csv));
+                String uuid = matcher.group(1);
+                groupedFiles.putIfAbsent(uuid, new HashMap<>());
+                groupedFiles.get(uuid).put("csv", generatePublicURL(bucketName_csv, csv));
             }
         }
 
         List<Map<String, String>> response = new ArrayList<>();
         for (Map.Entry<String, Map<String, String>> entry : groupedFiles.entrySet()) {
             Map<String, String> fileGroup = new HashMap<>();
-            fileGroup.put("timestamp", entry.getKey());
+            fileGroup.put("uuid", entry.getKey());
             fileGroup.put("audio", entry.getValue().getOrDefault("audio", "No audio file"));
             fileGroup.put("csv", entry.getValue().getOrDefault("csv", "No CSV file"));
             response.add(fileGroup);
@@ -77,6 +77,7 @@ public class FileUploadController {
 
         return response;
     }
+
 
     private String generatePublicURL(String bucketName, String fileName) {
         return "https://storage.googleapis.com/" + bucketName + "/" + fileName;

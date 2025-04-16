@@ -47,13 +47,13 @@ const ViewData = () => {
                 <p>Loading data...</p>
             ) : (
                 <div className="data-grid">
-                    {data.map(({ timestamp, audio, csv }) => {
+                    {data.map(({ uuid, audio, csv }) => {
                         const { systolic, diastolic } = csv !== "No CSV file" ? extractBPValues(csv) : { systolic: "N/A", diastolic: "N/A" };
                         const { bpm } = audio !== "No audio file" ? extractBPMValues(audio) : { bpm: "N/A" };
 
                         return (
-                            <div key={timestamp} className="data-card">
-                                <h3 className="timestamp">{timestamp}</h3>
+                            <div key={uuid} className="data-card">
+                                <h3 className="timestamp">{uuid}</h3>
                                 <p className="bp-info">BP: {systolic}/{diastolic} mmHg</p>
                                 <p className="bp-info">Estimated BPM: {bpm} BPM</p>
 

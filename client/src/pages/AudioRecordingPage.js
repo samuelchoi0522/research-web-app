@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import WaveSurfer from "wavesurfer.js";
 import RecordPlugin from "wavesurfer.js/dist/plugins/record.esm.js"; // Import the Record Plugin
+import CircularProgress from "@mui/material/CircularProgress";
 import "../styles/AudioRecordingPage.css";
+import { v4 as uuidv4} from "uuid";
 
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
@@ -22,6 +24,7 @@ const AudioRecordingPage = () => {
     const [systolicBP, setSystolicBP] = useState("");
     const [diastolicBP, setDiastolicBP] = useState("");
     const [mp3File, setMp3File] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
 
 
     const handleClick = () => {
@@ -34,16 +37,20 @@ const AudioRecordingPage = () => {
 
     const handleSubmit = async () => {
         if (!isSubmitEnabled) return;
+        setIsLoading(true);
+        const generatedUUID = uuidv4();
 
         const formDataAudio = new FormData();
         formDataAudio.append("audio", audioBlob);
         formDataAudio.append("systolicBP", systolicBP);
         formDataAudio.append("diastolicBP", diastolicBP);
+        formDataAudio.append("uuid", generatedUUID);
 
         const formDataCSV = new FormData();
         formDataCSV.append("file", csvFile);
         formDataCSV.append("systolicBP", systolicBP);
         formDataCSV.append("diastolicBP", diastolicBP);
+        formDataCSV.append("uuid", generatedUUID);
 
         try {
             const audioResponse = await fetch(`${API_BASE_URL}/api/upload/audio`, {
@@ -63,12 +70,15 @@ const AudioRecordingPage = () => {
                 setCsvFile(null);
                 setSystolicBP("");
                 setDiastolicBP("");
+                setMp3File(null);
                 if (fileInputRef.current) fileInputRef.current.value = "";
             } else {
                 alert("Failed to upload files.");
             }
         } catch (err) {
             console.error("Error uploading files:", err);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -331,7 +341,7 @@ const AudioRecordingPage = () => {
                     onClick={handleSubmit}
                     disabled={!isSubmitEnabled}
                 >
-                    Submit
+                    {isLoading ? <CircularProgress size={24} color="inherit" /> : "Submit"}
                 </button>
             </div>
 
