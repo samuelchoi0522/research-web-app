@@ -26,6 +26,7 @@ const AudioRecordingPage = () => {
     const [mp3File, setMp3File] = useState(null);
     const [actualBPM, setActualBPM] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [appleWatchBPM, setAppleWatchBPM] = useState("");
 
 
     const handleClick = () => {
@@ -34,7 +35,7 @@ const AudioRecordingPage = () => {
         }
     };
 
-    const isSubmitEnabled = (audioBlob || mp3File) && csvFile && systolicBP && diastolicBP && actualBPM;
+    const isSubmitEnabled = (audioBlob || mp3File) && csvFile && systolicBP && diastolicBP && actualBPM && appleWatchBPM;
 
     const handleSubmit = async () => {
         if (!isSubmitEnabled) return;
@@ -46,6 +47,7 @@ const AudioRecordingPage = () => {
         formDataAudio.append("systolicBP", systolicBP);
         formDataAudio.append("diastolicBP", diastolicBP);
         formDataAudio.append("actualBPM", actualBPM);
+        formDataAudio.append("appleWatchBPM", appleWatchBPM);
         formDataAudio.append("uuid", generatedUUID);
 
         const formDataCSV = new FormData();
@@ -53,6 +55,7 @@ const AudioRecordingPage = () => {
         formDataCSV.append("systolicBP", systolicBP);
         formDataCSV.append("diastolicBP", diastolicBP);
         formDataCSV.append("actualBPM", actualBPM);
+        formDataCSV.append("appleWatchBPM", appleWatchBPM);
         formDataCSV.append("uuid", generatedUUID);
 
         try {
@@ -74,6 +77,7 @@ const AudioRecordingPage = () => {
                 setSystolicBP("");
                 setDiastolicBP("");
                 setActualBPM("");
+                setAppleWatchBPM("");
                 setMp3File(null);
 
                 if (fileInputRef.current) fileInputRef.current.value = "";
@@ -318,6 +322,20 @@ const AudioRecordingPage = () => {
             </div>
 
             <div className="bp-input-container">
+                <h2>Type BPM from Apple Watch</h2>
+
+                <div className="bp-input">
+                    <label>BPM:</label>
+                    <input
+                        type="number"
+                        value={appleWatchBPM}
+                        onChange={(e) => setAppleWatchBPM(e.target.value)}
+                        placeholder="Apple Watch BPM"
+                    />
+                </div>
+            </div>
+
+            <div className="bp-input-container">
                 <h2>Type BP from BP Cuff</h2>
 
                 <div className="bp-input">
@@ -341,7 +359,7 @@ const AudioRecordingPage = () => {
                 </div>
 
                 <div className="bp-input">
-                    <label>BPM:</label>
+                    <label>BP Cuff BPM:</label>
                     <input
                         type="number"
                         value={actualBPM}

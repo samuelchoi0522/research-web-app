@@ -72,3 +72,9 @@ audio {
 .csv-button:hover {
     background-color: #1E88E5;
 }
+
+.output-image{
+    margin-top: 70px;
+    width: 600px;
+    height: auto;
+}

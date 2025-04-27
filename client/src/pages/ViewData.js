@@ -44,6 +44,11 @@ const ViewData = () => {
         return parts.length >= 3 ? { actualBPM: parts[5] } : { bpm: "N/A" };
     };
 
+    const extractAppleWatchBPMValues = (filename) => {
+        const parts = filename.split("_");
+        return parts.length >= 3 ? { appleWatchBPM: parts[6] } : { appleWatchBPM: "N/A" };
+    };
+
     const formatTimestamp = (timestampStr) => {
         const match = timestampStr.match(/(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})/);
         if (!match) return timestampStr;
@@ -60,6 +65,13 @@ const ViewData = () => {
         });
     };
 
+    const calculatePercentDifference = (actualBPM, estimatedBPM) => {
+        if (actualBPM === "N/A" || estimatedBPM === "N/A") return "N/A";
+        const actual = parseFloat(actualBPM);
+        const estimated = parseFloat(estimatedBPM);
+        return ((Math.abs(actual - estimated) / actual) * 100).toFixed(2) + "%";
+    }
+
 
 
     return (
@@ -73,13 +85,16 @@ const ViewData = () => {
                         const { systolic, diastolic } = csv !== "No CSV file" ? extractBPValues(csv) : { systolic: "N/A", diastolic: "N/A" };
                         const { bpm } = audio !== "No audio file" ? extractBPMValues(audio) : { bpm: "N/A" };
                         const { actualBPM } = audio !== "No audio file" ? extractActualBPMValues(audio) : { actualBPM: "N/A" };
+                        const { appleWatchBPM } = audio !== "No audio file" ? extractAppleWatchBPMValues(audio) : { appleWatchBPM: "N/A" };
 
                         return (
                             <div key={uuid} className="data-card">
                                 <h3 className="timestamp">{formatTimestamp(timestamp)} UTC</h3>
                                 <p className="bp-info">BP: {systolic}/{diastolic} mmHg</p>
-                                <p className="bp-info">Estimated BPM: {bpm} BPM</p>
-                                <p className="bp-info">Actual BPM: {actualBPM} BPM</p>
+                                <p className="bp-info">Apple Watch BPM: {appleWatchBPM} BPM</p>
+                                <p className="bp-info">Digital Stethoscope BPM: {bpm} BPM</p>
+                                <p className="bp-info">BP Cuff BPM: {actualBPM} BPM</p>
+                                <p className="bp-info">Percent Difference: {calculatePercentDifference(actualBPM, bpm)}</p>
 
                                 <div className="audio-container">
                                     {audio !== "No audio file" ? (
@@ -95,7 +110,7 @@ const ViewData = () => {
                                 <div className="csv-container">
                                     {csv !== "No CSV file" ? (
                                         <a href={csv} download className="csv-button">
-                                            Download CSV
+                                            Download ECG CSV File
                                         </a>
                                     ) : (
                                         <span>No CSV file</span>
@@ -104,8 +119,12 @@ const ViewData = () => {
                             </div>
                         );
                     })}
-                </div>
+
+                    </div>
+                    
             )}
+
+            <img src="https://storage.googleapis.com/data_image_1/output.png" alt="Output" className="output-image" />
         </div>
     );
 };

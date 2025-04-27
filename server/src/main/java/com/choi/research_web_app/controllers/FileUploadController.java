@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.checkerframework.common.util.count.report.qual.ReportUnqualified;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.*;
@@ -99,6 +100,7 @@ public class FileUploadController {
             @RequestParam("systolicBP") int systolicBP,
             @RequestParam("diastolicBP") int diastolicBP,
             @RequestParam("actualBPM") int actualBPM,
+            @RequestParam("appleWatchBPM") int appleWatchBPM,
             @RequestParam(value = "uuid", required = false) String uuid) {
 
         try {
@@ -111,7 +113,7 @@ public class FileUploadController {
             System.out.println("Audio file name: " + file.getOriginalFilename());
             System.out.println("Audio content type: " + file.getContentType());
 
-            String objectName = FileNameCreatorComponent.createAudioFileNameWithTimestamp(systolicBP, diastolicBP, bpm, actualBPM, uuid);
+            String objectName = FileNameCreatorComponent.createAudioFileNameWithTimestamp(systolicBP, diastolicBP, bpm, actualBPM, appleWatchBPM, uuid);
             byte[] fileBytes = file.getBytes();
 
             UploadAudioObjectService.uploadObjectService(projectId, bucketName_audio, objectName, fileBytes);
@@ -129,6 +131,7 @@ public class FileUploadController {
             @RequestParam("systolicBP") int systolicBP,
             @RequestParam("diastolicBP") int diastolicBP,
             @RequestParam("actualBPM") int actualBPM,
+            @RequestParam("appleWatchBPM") int appleWatchBPM,
             @RequestParam(value = "uuid", required = false) String uuid) {
 
         try {
@@ -136,7 +139,7 @@ public class FileUploadController {
                 uuid = FileNameCreatorComponent.generateUUID();
             }
 
-            String objectName = FileNameCreatorComponent.createCsvFileNameWithTimestamp(systolicBP, diastolicBP, actualBPM, uuid);
+            String objectName = FileNameCreatorComponent.createCsvFileNameWithTimestamp(systolicBP, diastolicBP, actualBPM, appleWatchBPM, uuid);
             byte[] fileBytes = file.getBytes();
 
             UploadCSVObjectService.uploadObjectService(projectId, bucketName_csv, objectName, fileBytes);

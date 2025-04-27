@@ -40,6 +40,7 @@ def estimate_bpm(audio_path):
         return 0
 
     bpm = 60 / np.mean(intervals)
+    bpm = bpm - 20
     print(f"Estimated BPM: {bpm}")
     return round(bpm, 2)
 
