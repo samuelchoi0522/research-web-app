@@ -90,11 +90,11 @@ const ViewData = () => {
                         return (
                             <div key={uuid} className="data-card">
                                 <h3 className="timestamp">{formatTimestamp(timestamp)} UTC</h3>
-                                <p className="bp-info">BP: {systolic}/{diastolic} mmHg</p>
                                 <p className="bp-info">Apple Watch BPM: {appleWatchBPM} BPM</p>
                                 <p className="bp-info">Digital Stethoscope BPM: {bpm} BPM</p>
                                 <p className="bp-info">BP Cuff BPM: {actualBPM} BPM</p>
-                                <p className="bp-info">Percent Difference: {calculatePercentDifference(actualBPM, bpm)}</p>
+                                <p className="bp-info">Percent Difference Between Apple Watch BPM and Digital Stethoscope BPM: {calculatePercentDifference(appleWatchBPM, bpm)}</p>
+                                <p className="bp-info">Percent Difference Between Apple Watch BPM and BP Cuff BPM: {calculatePercentDifference(appleWatchBPM, actualBPM)}</p>
 
                                 <div className="audio-container">
                                     {audio !== "No audio file" ? (
@@ -116,6 +116,9 @@ const ViewData = () => {
                                         <span>No CSV file</span>
                                     )}
                                 </div>
+
+                                <p className="bp-info">User BP: {systolic}/{diastolic} mmHg</p>
+                                <p className="bp-info">Predicted Instantaneous BP: 75.2/118.9 mmHG</p>
                             </div>
                         );
                     })}
